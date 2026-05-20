@@ -23,3 +23,13 @@ model Beneficiario {
   ubicacion  String
   createdAt  DateTime @default(now())
 }
+
+model Proyecto {
+  id           Int      @id @default(autoincrement())
+  nombre       String
+  descripcion  String
+  fechaInicio  DateTime
+  fechaFin     DateTime
+  estado       String
+  createdAt    DateTime @default(now())
+}
