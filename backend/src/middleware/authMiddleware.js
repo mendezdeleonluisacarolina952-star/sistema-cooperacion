@@ -5,8 +5,6 @@ const verifyToken = (req, res, next) => {
 
     const authHeader = req.headers.authorization;
 
-    console.log(authHeader);
-
     if (!authHeader) {
       return res.status(401).json({
         error: "Token requerido",
@@ -15,8 +13,10 @@ const verifyToken = (req, res, next) => {
 
     const token = authHeader.split(" ")[1];
 
-    console.log(token);
-
+    console.log(
+  "VERIFY SECRET:",
+  process.env.JWT_SECRET
+);  
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET
@@ -27,8 +27,6 @@ const verifyToken = (req, res, next) => {
     next();
 
   } catch (error) {
-
-    console.log(error);
 
     return res.status(401).json({
       error: "Token inválido",

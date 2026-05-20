@@ -45,16 +45,23 @@ const loginUser = async (email, password) => {
     throw new Error("Contraseña incorrecta");
   }
 
+  console.log(
+  "SIGN SECRET:",
+  process.env.JWT_SECRET
+);
+
   const token = jwt.sign(
     {
       id: user.id_usuario,
       rol: user.rol,
     },
-    "secretkey",
+    process.env.JWT_SECRET,
     {
       expiresIn: "1h",
     }
   );
+
+delete user.password;
 
   return {
     message: "Login exitoso",
