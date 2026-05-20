@@ -1,5 +1,9 @@
 require("dotenv").config();
 
+
+const dashboardRoutes = require(
+  "./routes/dashboardRoutes"
+);
 const express = require("express");
 const cors = require("cors");
 
@@ -22,6 +26,11 @@ app.use(
 app.use(
   "/api/proyectos",
   proyectoRoutes
+);
+
+app.use(
+  "/api/dashboard",
+  dashboardRoutes
 );
 
 app.get("/", (req, res) => {
