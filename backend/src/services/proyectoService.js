@@ -7,7 +7,11 @@ const crearProyecto = async (data) => {
 };
 
 const obtenerProyectos = async () => {
-  return await prisma.proyecto.findMany();
+  return await prisma.proyecto.findMany({
+    include: {
+      beneficiarios: true,
+    },
+  });
 };
 
 const obtenerProyectoPorId = async (id) => {
