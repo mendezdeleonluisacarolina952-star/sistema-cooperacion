@@ -1,5 +1,6 @@
 const prisma = require("../prisma");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const registerUser = async (data) => {
   const existingUser = await prisma.usuario.findUnique({
@@ -26,6 +27,43 @@ const registerUser = async (data) => {
   return user;
 };
 
+const loginUser = async (email, password) => {
+  const user = await prisma.usuario.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  const validPassword = await bcrypt.compare(
+    password,
+    user.password
+  );
+
+  if (!validPassword) {
+    throw new Error("Contraseña incorrecta");
+  }
+
+  const token = jwt.sign(
+    {
+      id: user.id_usuario,
+      rol: user.rol,
+    },
+    "secretkey",
+    {
+      expiresIn: "1h",
+    }
+  );
+
+  return {
+    message: "Login exitoso",
+    token,
+    user,
+  };
+};
+
 module.exports = {
   registerUser,
+  loginUser,
 };
