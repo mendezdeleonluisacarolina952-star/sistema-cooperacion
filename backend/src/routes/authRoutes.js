@@ -9,7 +9,20 @@ const {
   verifyRole,
 } = require("../middleware/authMiddleware");
 
-router.post("/register", authController.register);
+const {
+  registerValidation,
+} = require("../validators/authValidator");
+
+const validateFields = require(
+  "../middleware/validationMiddleware"
+);
+
+router.post(
+  "/register",
+  registerValidation,
+  validateFields,
+  authController.register
+);
 
 router.post("/login", authController.login);
 
@@ -31,3 +44,4 @@ router.get(
 );
 
 module.exports = router;
+

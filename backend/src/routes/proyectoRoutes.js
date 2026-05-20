@@ -11,10 +11,22 @@ const {
   verifyRole,
 } = require("../middleware/authMiddleware");
 
+const {
+  proyectoValidation,
+} = require(
+  "../validators/proyectoValidator"
+);
+
+const validateFields = require(
+  "../middleware/validationMiddleware"
+);
+
 router.post(
   "/",
   verifyToken,
   verifyRole(["admin"]),
+  proyectoValidation,
+  validateFields,
   proyectoController.crear
 );
 
@@ -34,6 +46,8 @@ router.put(
   "/:id",
   verifyToken,
   verifyRole(["admin"]),
+  proyectoValidation,
+  validateFields,
   proyectoController.actualizar
 );
 

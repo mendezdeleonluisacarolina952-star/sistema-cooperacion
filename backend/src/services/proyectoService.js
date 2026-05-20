@@ -1,16 +1,41 @@
 const prisma = require("../prisma");
 
+
 const crearProyecto = async (data) => {
   return await prisma.proyecto.create({
     data,
   });
 };
 
-const obtenerProyectos = async () => {
+const obtenerProyectos = async (filtros) => {
+
+  const where = {};
+
+  // FILTRO POR ESTADO
+  if (filtros.estado) {
+
+    where.estado = filtros.estado;
+
+  }
+
+  // BÚSQUEDA POR NOMBRE
+  if (filtros.nombre) {
+
+    where.nombre = {
+      contains: filtros.nombre,
+      mode: "insensitive",
+    };
+
+  }
+
   return await prisma.proyecto.findMany({
+
+    where,
+
     include: {
       beneficiarios: true,
     },
+
   });
 };
 
@@ -38,6 +63,8 @@ const eliminarProyecto = async (id) => {
     },
   });
 };
+
+
 
 module.exports = {
   crearProyecto,

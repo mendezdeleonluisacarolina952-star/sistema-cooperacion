@@ -1,9 +1,25 @@
 const prisma = require("../prisma");
 
 const crearBeneficiario = async (data) => {
-  return await prisma.beneficiario.create({
-    data,
-  });
+
+  try {
+
+    return await prisma.beneficiario.create({
+      data,
+    });
+
+  } catch (error) {
+
+    if (error.code === "P2002") {
+
+      throw new Error(
+        "El DPI ya existe"
+      );
+
+    }
+
+    throw error;
+  }
 };
 
 const obtenerBeneficiarios = async () => {

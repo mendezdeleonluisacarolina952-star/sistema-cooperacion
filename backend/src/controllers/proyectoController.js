@@ -17,10 +17,15 @@ const crear = async (req, res) => {
 };
 
 const obtenerTodos = async (req, res) => {
+
   try {
 
+    const filtros = req.query;
+
     const proyectos =
-      await proyectoService.obtenerProyectos();
+      await proyectoService.obtenerProyectos(
+        filtros
+      );
 
     res.json(proyectos);
 
@@ -29,6 +34,7 @@ const obtenerTodos = async (req, res) => {
     res.status(500).json({
       error: error.message,
     });
+
   }
 };
 
