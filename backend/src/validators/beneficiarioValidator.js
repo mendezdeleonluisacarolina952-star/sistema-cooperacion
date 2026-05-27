@@ -1,41 +1,21 @@
 const { body } = require("express-validator");
 
 const beneficiarioValidation = [
-
   body("nombre")
     .notEmpty()
-    .withMessage(
-      "El nombre es obligatorio"
-    ),
+    .withMessage("Nombre obligatorio"),
 
   body("dpi")
-    .isLength({ min: 13, max: 13 })
-    .withMessage(
-      "El DPI debe tener 13 dígitos"
-    )
-    .isNumeric()
-    .withMessage(
-      "El DPI solo debe contener números"
-    ),
+    .notEmpty()
+    .withMessage("DPI obligatorio"),
 
   body("edad")
-    .isInt({ min: 1 })
-    .withMessage(
-      "La edad debe ser mayor a 0"
-    ),
+    .isInt()
+    .withMessage("Edad inválida"),
 
   body("ubicacion")
     .notEmpty()
-    .withMessage(
-      "La ubicación es obligatoria"
-    ),
-
-  body("proyectoId")
-    .isInt()
-    .withMessage(
-      "El proyectoId debe ser numérico"
-    ),
-
+    .withMessage("Ubicación obligatoria"),
 ];
 
 module.exports = {

@@ -1,142 +1,197 @@
-import MainLayout from "../layouts/MainLayout";
+import { useEffect, useState } from "react";
+
+import api from "../api/axios";
+
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  ResponsiveContainer,
+} from "recharts";
 
 function Reportes() {
-  return (
-    <MainLayout>
 
-      <h1 style={{
-        marginBottom: "30px"
-      }}>
+  const [datos, setDatos] = useState({
+    beneficiarios: 0,
+    proyectos: 0,
+    usuarios: 0,
+  });
+
+  const cargarReportes = async () => {
+
+    try {
+
+      const response =
+        await api.get("/reportes");
+
+      setDatos(response.data);
+
+    } catch (error) {
+
+      console.error(
+        "Error cargando reportes:",
+        error
+      );
+
+    }
+
+  };
+
+  useEffect(() => {
+
+    cargarReportes();
+
+  }, []);
+
+  const data = [
+    {
+      nombre: "Beneficiarios",
+      total: datos.beneficiarios,
+    },
+    {
+      nombre: "Proyectos",
+      total: datos.proyectos,
+    },
+    {
+      nombre: "Usuarios",
+      total: datos.usuarios,
+    },
+  ];
+
+  return (
+
+    <div className="p-6">
+
+      <h1 className="text-3xl font-bold mb-6">
         Reportes
       </h1>
 
       {/* TARJETAS */}
-      <div style={{
-        display: "flex",
-        gap: "20px",
-        flexWrap: "wrap",
-        marginBottom: "30px"
-      }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(3, 1fr)",
+          gap: "20px",
+          marginBottom: "40px",
+        }}
+      >
 
-        <div style={cardBlue}>
-          <h2>Total Beneficiarios</h2>
-          <p style={numberStyle}>120</p>
+        <div
+          style={{
+            background: "#2563eb",
+            color: "white",
+            padding: "30px",
+            borderRadius: "10px",
+          }}
+        >
+
+          <h2>Beneficiarios</h2>
+
+          <h1
+            style={{
+              fontSize: "40px",
+            }}
+          >
+            {datos.beneficiarios}
+          </h1>
+
         </div>
 
-        <div style={cardGreen}>
-          <h2>Proyectos Activos</h2>
-          <p style={numberStyle}>15</p>
+        <div
+          style={{
+            background: "#16a34a",
+            color: "white",
+            padding: "30px",
+            borderRadius: "10px",
+          }}
+        >
+
+          <h2>Proyectos</h2>
+
+          <h1
+            style={{
+              fontSize: "40px",
+            }}
+          >
+            {datos.proyectos}
+          </h1>
+
         </div>
 
-        <div style={cardRed}>
-          <h2>Fondos Ejecutados</h2>
-          <p style={numberStyle}>Q 450K</p>
+        <div
+          style={{
+            background: "#dc2626",
+            color: "white",
+            padding: "30px",
+            borderRadius: "10px",
+          }}
+        >
+
+          <h2>Usuarios</h2>
+
+          <h1
+            style={{
+              fontSize: "40px",
+            }}
+          >
+            {datos.usuarios}
+          </h1>
+
         </div>
 
       </div>
 
-      {/* TABLA */}
-      <div style={{
-        backgroundColor: "white",
-        borderRadius: "10px",
-        padding: "20px"
-      }}>
+      {/* GRAFICA */}
+      <div
+        style={{
+          background: "white",
+          padding: "20px",
+          borderRadius: "10px",
+        }}
+      >
 
-        <h2 style={{
-          marginBottom: "20px"
-        }}>
-          Resumen de Proyectos
+        <h2
+          style={{
+            marginBottom: "20px",
+          }}
+        >
+          Estadísticas Generales
         </h2>
 
-        <table style={{
-          width: "100%",
-          borderCollapse: "collapse"
-        }}>
+        <ResponsiveContainer
+          width="100%"
+          height={400}
+        >
 
-          <thead style={{
-            backgroundColor: "#1e293b",
-            color: "white"
-          }}>
+          <BarChart data={data}>
 
-            <tr>
-              <th style={thStyle}>Proyecto</th>
-              <th style={thStyle}>Beneficiarios</th>
-              <th style={thStyle}>Estado</th>
-              <th style={thStyle}>Impacto</th>
-            </tr>
+            <CartesianGrid strokeDasharray="3 3" />
 
-          </thead>
+            <XAxis dataKey="nombre" />
 
-          <tbody>
+            <YAxis />
 
-            <tr>
-              <td style={tdStyle}>Agua Potable</td>
-              <td style={tdStyle}>45</td>
-              <td style={tdStyle}>Activo</td>
-              <td style={tdStyle}>Alto</td>
-            </tr>
+            <Tooltip />
 
-            <tr>
-              <td style={tdStyle}>Educación Rural</td>
-              <td style={tdStyle}>70</td>
-              <td style={tdStyle}>En Proceso</td>
-              <td style={tdStyle}>Medio</td>
-            </tr>
+            <Bar
+              dataKey="total"
+              fill="#2563eb"
+            />
 
-            <tr>
-              <td style={tdStyle}>Centro Comunitario</td>
-              <td style={tdStyle}>30</td>
-              <td style={tdStyle}>Finalizado</td>
-              <td style={tdStyle}>Alto</td>
-            </tr>
+          </BarChart>
 
-          </tbody>
-
-        </table>
+        </ResponsiveContainer>
 
       </div>
 
-    </MainLayout>
+    </div>
+
   );
+
 }
-
-const numberStyle = {
-  fontSize: "32px",
-  fontWeight: "bold"
-};
-
-const cardBlue = {
-  backgroundColor: "#2563eb",
-  color: "white",
-  padding: "20px",
-  borderRadius: "10px",
-  width: "220px"
-};
-
-const cardGreen = {
-  backgroundColor: "#16a34a",
-  color: "white",
-  padding: "20px",
-  borderRadius: "10px",
-  width: "220px"
-};
-
-const cardRed = {
-  backgroundColor: "#dc2626",
-  color: "white",
-  padding: "20px",
-  borderRadius: "10px",
-  width: "220px"
-};
-
-const thStyle = {
-  padding: "15px",
-  textAlign: "left"
-};
-
-const tdStyle = {
-  padding: "15px",
-  borderBottom: "1px solid #ddd"
-};
 
 export default Reportes;

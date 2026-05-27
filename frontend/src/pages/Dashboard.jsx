@@ -1,69 +1,134 @@
+import { useEffect, useState } from "react";
+
+import api from "../api/axios";
+
 import MainLayout from "../layouts/MainLayout";
 
 function Dashboard() {
+
+  // =========================
+  // STATES
+  // =========================
+  const [datos, setDatos] = useState({
+    beneficiarios: 0,
+    proyectos: 0,
+    usuarios: 0,
+    reportes: 0,
+  });
+
+  // =========================
+  // CARGAR DASHBOARD
+  // =========================
+  const cargarDashboard = async () => {
+
+    try {
+
+      const response =
+        await api.get("/dashboard");
+
+      setDatos(response.data);
+
+    } catch (error) {
+
+      console.error(
+        "Error cargando dashboard:",
+        error
+      );
+
+    }
+
+  };
+
+  // =========================
+  // USE EFFECT
+  // =========================
+  useEffect(() => {
+
+    cargarDashboard();
+
+  }, []);
+
   return (
+
     <MainLayout>
 
-      <h1 style={{
-        marginBottom: "30px"
-      }}>
-        Dashboard
-      </h1>
+      <div className="p-6">
 
-      <div style={{
-        display: "flex",
-        gap: "20px",
-        flexWrap: "wrap"
-      }}>
+        <h1 className="text-3xl font-bold mb-6">
+          Dashboard
+        </h1>
 
-        <div style={cardBlue}>
-          <h2>Beneficiarios</h2>
-          <p style={numberStyle}>120</p>
-        </div>
+        {/* CARDS */}
+        <div className="grid grid-cols-4 gap-6">
 
-        <div style={cardGreen}>
-          <h2>Proyectos</h2>
-          <p style={numberStyle}>15</p>
-        </div>
+          {/* BENEFICIARIOS */}
+          <div className="bg-blue-600 text-white p-6 rounded shadow">
 
-        <div style={cardRed}>
-          <h2>Usuarios</h2>
-          <p style={numberStyle}>8</p>
+            <h2 className="text-xl">
+              Beneficiarios
+            </h2>
+
+            <p className="text-4xl font-bold mt-2">
+              {
+                datos.beneficiarios
+              }
+            </p>
+
+          </div>
+
+          {/* PROYECTOS */}
+          <div className="bg-green-600 text-white p-6 rounded shadow">
+
+            <h2 className="text-xl">
+              Proyectos
+            </h2>
+
+            <p className="text-4xl font-bold mt-2">
+              {
+                datos.proyectos
+              }
+            </p>
+
+          </div>
+
+          {/* USUARIOS */}
+          <div className="bg-yellow-500 text-white p-6 rounded shadow">
+
+            <h2 className="text-xl">
+              Usuarios
+            </h2>
+
+            <p className="text-4xl font-bold mt-2">
+              {
+                datos.usuarios
+              }
+            </p>
+
+          </div>
+
+          {/* REPORTES */}
+          <div className="bg-red-600 text-white p-6 rounded shadow">
+
+            <h2 className="text-xl">
+              Reportes
+            </h2>
+
+            <p className="text-4xl font-bold mt-2">
+              {
+                datos.reportes
+              }
+            </p>
+
+          </div>
+
         </div>
 
       </div>
 
     </MainLayout>
+
   );
+
 }
-
-const numberStyle = {
-  fontSize: "32px",
-  fontWeight: "bold"
-};
-
-const cardBlue = {
-  backgroundColor: "#2563eb",
-  color: "white",
-  padding: "20px",
-  borderRadius: "10px",
-  width: "220px"
-};
-
-const cardGreen = {
-  backgroundColor: "#16a34a",
-  color: "white",
-  padding: "20px",
-  borderRadius: "10px",
-  width: "220px"
-};
-
-const cardRed = {
-  backgroundColor: "#dc2626",
-  color: "white",
-  padding: "20px",
-  borderRadius: "10px",
-  width: "220px"
-};
 
 export default Dashboard;

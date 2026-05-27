@@ -1,24 +1,34 @@
-const dashboardService = require(
-  "../services/dashboardService"
-);
+const prisma = require("../prisma");
 
-const obtenerDashboard = async (
-  req,
-  res
-) => {
+const obtenerDashboard = async (req, res) => {
+
   try {
 
-    const data =
-      await dashboardService.obtenerDashboard();
+    const beneficiarios =
+      await prisma.beneficiario.count();
 
-    res.json(data);
+    const proyectos =
+      await prisma.proyecto.count();
+
+    const usuarios =
+      await prisma.usuario.count();
+
+    res.json({
+      beneficiarios,
+      proyectos,
+      usuarios,
+    });
 
   } catch (error) {
+
+    console.log(error);
 
     res.status(500).json({
       error: error.message,
     });
+
   }
+
 };
 
 module.exports = {

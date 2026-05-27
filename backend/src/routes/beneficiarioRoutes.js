@@ -13,14 +13,13 @@ const {
 
 const {
   beneficiarioValidation,
-} = require(
-  "../validators/beneficiarioValidator"
-);
+} = require("../validators/beneficiarioValidator");
 
 const validateFields = require(
   "../middleware/validationMiddleware"
 );
 
+/* CREAR */
 router.post(
   "/",
   verifyToken,
@@ -29,18 +28,21 @@ router.post(
   beneficiarioController.crear
 );
 
+/* OBTENER TODOS */
 router.get(
   "/",
   verifyToken,
   beneficiarioController.obtenerTodos
 );
 
+/* OBTENER POR ID */
 router.get(
   "/:id",
   verifyToken,
   beneficiarioController.obtenerPorId
 );
 
+/* ACTUALIZAR */
 router.put(
   "/:id",
   verifyToken,
@@ -49,6 +51,7 @@ router.put(
   beneficiarioController.actualizar
 );
 
+/* ELIMINAR */
 router.delete(
   "/:id",
   verifyToken,

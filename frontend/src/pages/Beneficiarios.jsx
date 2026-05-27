@@ -1,159 +1,363 @@
-import MainLayout from "../layouts/MainLayout";
+import { useEffect, useState } from "react";
+import api from "../api/axios";
 
 function Beneficiarios() {
 
-  const beneficiarios = [
-    {
-      id: 1,
-      nombre: "Juan Pérez",
-      dpi: "1234567890101",
-      comunidad: "Guatemala"
-    },
-    {
-      id: 2,
-      nombre: "María López",
-      dpi: "9876543210101",
-      comunidad: "Mixco"
-    },
-    {
-      id: 3,
-      nombre: "Carlos Gómez",
-      dpi: "4567891230101",
-      comunidad: "Villa Nueva"
+  // =========================
+  // STATES
+  // =========================
+  const [beneficiarios, setBeneficiarios] =
+    useState([]);
+
+  const [nombre, setNombre] = useState("");
+  const [dpi, setDpi] = useState("");
+  const [edad, setEdad] = useState("");
+  const [ubicacion, setUbicacion] =
+    useState("");
+
+  // EDITAR
+  const [editando, setEditando] =
+    useState(false);
+
+  const [idEditar, setIdEditar] =
+    useState(null);
+
+  // =========================
+  // OBTENER BENEFICIARIOS
+  // =========================
+  const cargarBeneficiarios = async () => {
+
+    try {
+
+      const response = await api.get(
+        "/beneficiarios"
+      );
+
+      setBeneficiarios(response.data);
+
+    } catch (error) {
+
+      console.error(
+        "Error cargando beneficiarios:",
+        error
+      );
     }
-  ];
+  };
+
+  // =========================
+  // CREAR BENEFICIARIO
+  // =========================
+  const crearBeneficiario = async (e) => {
+
+    e.preventDefault();
+
+    try {
+
+      await api.post("/beneficiarios", {
+        nombre,
+        dpi,
+        edad: Number(edad),
+        ubicacion,
+      });
+
+      alert("Beneficiario creado");
+
+      limpiarFormulario();
+
+      cargarBeneficiarios();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Error creando beneficiario"
+      );
+    }
+  };
+
+  // =========================
+  // ELIMINAR BENEFICIARIO
+  // =========================
+  const eliminarBeneficiario = async (
+    id
+  ) => {
+
+    try {
+
+      await api.delete(
+        `/beneficiarios/${id}`
+      );
+
+      alert("Beneficiario eliminado");
+
+      cargarBeneficiarios();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Error eliminando beneficiario"
+      );
+    }
+  };
+
+  // =========================
+  // EDITAR BENEFICIARIO
+  // =========================
+  const editarBeneficiario = (b) => {
+
+    setEditando(true);
+
+    setIdEditar(b.id);
+
+    setNombre(b.nombre);
+
+    setDpi(b.dpi);
+
+    setEdad(b.edad);
+
+    setUbicacion(b.ubicacion);
+  };
+
+  // =========================
+  // ACTUALIZAR BENEFICIARIO
+  // =========================
+  const actualizarBeneficiario =
+    async (e) => {
+
+      e.preventDefault();
+
+      try {
+
+        await api.put(
+          `/beneficiarios/${idEditar}`,
+          {
+            nombre,
+            dpi,
+            edad: Number(edad),
+            ubicacion,
+          }
+        );
+
+        alert(
+          "Beneficiario actualizado"
+        );
+
+        setEditando(false);
+
+        setIdEditar(null);
+
+        limpiarFormulario();
+
+        cargarBeneficiarios();
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert(
+          "Error actualizando beneficiario"
+        );
+      }
+    };
+
+  // =========================
+  // LIMPIAR FORMULARIO
+  // =========================
+  const limpiarFormulario = () => {
+
+    setNombre("");
+
+    setDpi("");
+
+    setEdad("");
+
+    setUbicacion("");
+  };
+
+  // =========================
+  // CARGAR AL INICIAR
+  // =========================
+  useEffect(() => {
+
+    cargarBeneficiarios();
+
+  }, []);
 
   return (
-    <MainLayout>
+    <div className="p-6">
 
-      <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "20px"
-      }}>
+      <h1 className="text-2xl font-bold mb-6">
+        Beneficiarios
+      </h1>
 
-        <h1>Beneficiarios</h1>
+      {/* FORMULARIO */}
+      <form
+        onSubmit={
+          editando
+            ? actualizarBeneficiario
+            : crearBeneficiario
+        }
+        className="bg-white p-6 rounded shadow mb-6"
+      >
 
-        <button style={{
-          backgroundColor: "#2563eb",
-          color: "white",
-          border: "none",
-          padding: "10px 15px",
-          borderRadius: "5px",
-          cursor: "pointer"
-        }}>
-          + Nuevo Beneficiario
+        <div className="grid grid-cols-2 gap-4">
+
+          <input
+            type="text"
+            placeholder="Nombre"
+            value={nombre}
+            onChange={(e) =>
+              setNombre(e.target.value)
+            }
+            className="border p-2 rounded"
+            required
+          />
+
+          <input
+            type="text"
+            placeholder="DPI"
+            value={dpi}
+            onChange={(e) =>
+              setDpi(e.target.value)
+            }
+            className="border p-2 rounded"
+            required
+          />
+
+          <input
+            type="number"
+            placeholder="Edad"
+            value={edad}
+            onChange={(e) =>
+              setEdad(e.target.value)
+            }
+            className="border p-2 rounded"
+            required
+          />
+
+          <input
+            type="text"
+            placeholder="Ubicación"
+            value={ubicacion}
+            onChange={(e) =>
+              setUbicacion(e.target.value)
+            }
+            className="border p-2 rounded"
+            required
+          />
+
+        </div>
+
+        <button
+          type="submit"
+          className={`mt-4 text-white px-4 py-2 rounded ${
+            editando
+              ? "bg-yellow-500"
+              : "bg-blue-600"
+          }`}
+        >
+
+          {editando
+            ? "Actualizar Beneficiario"
+            : "Crear Beneficiario"}
+
         </button>
+
+      </form>
+
+      {/* TABLA */}
+      <div className="bg-white shadow rounded p-4">
+
+        <table className="w-full border">
+
+          <thead>
+
+            <tr className="bg-gray-200">
+
+              <th className="p-2 border">
+                Nombre
+              </th>
+
+              <th className="p-2 border">
+                DPI
+              </th>
+
+              <th className="p-2 border">
+                Edad
+              </th>
+
+              <th className="p-2 border">
+                Ubicación
+              </th>
+
+              <th className="p-2 border">
+                Acciones
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {beneficiarios.map((b) => (
+
+              <tr key={b.id}>
+
+                <td className="p-2 border">
+                  {b.nombre}
+                </td>
+
+                <td className="p-2 border">
+                  {b.dpi}
+                </td>
+
+                <td className="p-2 border">
+                  {b.edad}
+                </td>
+
+                <td className="p-2 border">
+                  {b.ubicacion}
+                </td>
+
+                <td className="p-2 border flex gap-2">
+
+                  <button
+                    onClick={() =>
+                      editarBeneficiario(b)
+                    }
+                    className="bg-yellow-500 text-white px-3 py-1 rounded"
+                  >
+                    Editar
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      eliminarBeneficiario(
+                        b.id
+                      )
+                    }
+                    className="bg-red-500 text-white px-3 py-1 rounded"
+                  >
+                    Eliminar
+                  </button>
+
+                </td>
+
+              </tr>
+            ))}
+
+          </tbody>
+
+        </table>
 
       </div>
 
-      {/* BUSCADOR */}
-      <input
-        type="text"
-        placeholder="Buscar beneficiario..."
-        style={{
-          width: "300px",
-          padding: "10px",
-          marginBottom: "20px",
-          borderRadius: "5px",
-          border: "1px solid #ccc"
-        }}
-      />
-
-      {/* TABLA */}
-      <table style={{
-        width: "100%",
-        backgroundColor: "white",
-        borderCollapse: "collapse",
-        borderRadius: "10px",
-        overflow: "hidden"
-      }}>
-
-        <thead style={{
-          backgroundColor: "#1e293b",
-          color: "white"
-        }}>
-          <tr>
-            <th style={thStyle}>ID</th>
-            <th style={thStyle}>Nombre</th>
-            <th style={thStyle}>DPI</th>
-            <th style={thStyle}>Comunidad</th>
-            <th style={thStyle}>Acciones</th>
-          </tr>
-        </thead>
-
-        <tbody>
-
-          {beneficiarios.map((beneficiario) => (
-            <tr key={beneficiario.id}>
-
-              <td style={tdStyle}>
-                {beneficiario.id}
-              </td>
-
-              <td style={tdStyle}>
-                {beneficiario.nombre}
-              </td>
-
-              <td style={tdStyle}>
-                {beneficiario.dpi}
-              </td>
-
-              <td style={tdStyle}>
-                {beneficiario.comunidad}
-              </td>
-
-              <td style={tdStyle}>
-
-                <button style={editButton}>
-                  Editar
-                </button>
-
-                <button style={deleteButton}>
-                  Eliminar
-                </button>
-
-              </td>
-
-            </tr>
-          ))}
-
-        </tbody>
-
-      </table>
-
-    </MainLayout>
+    </div>
   );
 }
-
-const thStyle = {
-  padding: "15px",
-  textAlign: "left"
-};
-
-const tdStyle = {
-  padding: "15px",
-  borderBottom: "1px solid #ddd"
-};
-
-const editButton = {
-  backgroundColor: "#16a34a",
-  color: "white",
-  border: "none",
-  padding: "8px 12px",
-  borderRadius: "5px",
-  marginRight: "10px",
-  cursor: "pointer"
-};
-
-const deleteButton = {
-  backgroundColor: "#dc2626",
-  color: "white",
-  border: "none",
-  padding: "8px 12px",
-  borderRadius: "5px",
-  cursor: "pointer"
-};
 
 export default Beneficiarios;

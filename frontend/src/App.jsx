@@ -1,20 +1,73 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Beneficiarios from "./pages/Beneficiarios";
+
 import Login from "./pages/Login";
-import Proyectos from "./pages/Proyectos";
 import Dashboard from "./pages/Dashboard";
+import Beneficiarios from "./pages/Beneficiarios";
+import Proyectos from "./pages/Proyectos";
 import Reportes from "./pages/Reportes";
+import Usuarios from "./pages/Usuarios";
+
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-  <Route path="/" element={<Login />} />
-  <Route path="/dashboard" element={<Dashboard />} />
-  <Route path="/beneficiarios" element={<Beneficiarios />} />
-  <Route path="/proyectos" element={<Proyectos />} />
-  <Route path="/reportes" element={<Reportes />} />
-</Routes>
+
+        {/* LOGIN */}
+        <Route path="/" element={<Login />} />
+
+        {/* DASHBOARD */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* BENEFICIARIOS */}
+        <Route
+          path="/beneficiarios"
+          element={
+            <ProtectedRoute>
+              <Beneficiarios />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* PROYECTOS */}
+        <Route
+          path="/proyectos"
+          element={
+            <ProtectedRoute>
+              <Proyectos />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* REPORTES */}
+        <Route
+          path="/reportes"
+          element={
+            <ProtectedRoute>
+              <Reportes />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* USUARIOS */}
+        <Route
+          path="/usuarios"
+          element={
+            <ProtectedRoute>
+              <Usuarios />
+            </ProtectedRoute>
+          }
+        />
+
+      </Routes>
     </BrowserRouter>
   );
 }

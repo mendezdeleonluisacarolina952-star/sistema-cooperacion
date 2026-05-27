@@ -1,167 +1,388 @@
-import MainLayout from "../layouts/MainLayout";
+import { useEffect, useState } from "react";
+import api from "../api/axios";
 
 function Proyectos() {
 
-  const proyectos = [
-    {
-      id: 1,
-      nombre: "Agua Potable",
-      estado: "Activo",
-      presupuesto: "Q 150,000"
-    },
-    {
-      id: 2,
-      nombre: "Educación Rural",
-      estado: "En Proceso",
-      presupuesto: "Q 80,000"
-    },
-    {
-      id: 3,
-      nombre: "Centro Comunitario",
-      estado: "Finalizado",
-      presupuesto: "Q 220,000"
+  // =========================
+  // STATES
+  // =========================
+  const [proyectos, setProyectos] =
+    useState([]);
+
+  const [nombre, setNombre] =
+    useState("");
+
+  const [descripcion, setDescripcion] =
+    useState("");
+
+  const [fechaInicio, setFechaInicio] =
+    useState("");
+
+  const [fechaFin, setFechaFin] =
+    useState("");
+
+  const [estado, setEstado] =
+    useState("");
+
+  // EDITAR
+  const [editando, setEditando] =
+    useState(false);
+
+  const [idEditar, setIdEditar] =
+    useState(null);
+
+  // =========================
+  // OBTENER PROYECTOS
+  // =========================
+  const cargarProyectos = async () => {
+
+    try {
+
+      const response = await api.get(
+        "/proyectos"
+      );
+
+      setProyectos(response.data);
+
+    } catch (error) {
+
+      console.error(
+        "Error cargando proyectos:",
+        error
+      );
     }
-  ];
+  };
+
+  // =========================
+  // CREAR PROYECTO
+  // =========================
+  const crearProyecto = async (e) => {
+
+    e.preventDefault();
+
+    try {
+
+      await api.post("/proyectos", {
+        nombre,
+        descripcion,
+        fechaInicio,
+        fechaFin,
+        estado,
+      });
+
+      alert("Proyecto creado");
+
+      limpiarFormulario();
+
+      cargarProyectos();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Error creando proyecto"
+      );
+    }
+  };
+
+  // =========================
+  // ELIMINAR
+  // =========================
+  const eliminarProyecto = async (
+    id
+  ) => {
+
+    try {
+
+      await api.delete(
+        `/proyectos/${id}`
+      );
+
+      alert("Proyecto eliminado");
+
+      cargarProyectos();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Error eliminando proyecto"
+      );
+    }
+  };
+
+  // =========================
+  // EDITAR
+  // =========================
+  const editarProyecto = (p) => {
+
+    setEditando(true);
+
+    setIdEditar(p.id);
+
+    setNombre(p.nombre);
+
+    setDescripcion(p.descripcion);
+
+    setFechaInicio(
+      p.fechaInicio?.substring(0, 10)
+    );
+
+    setFechaFin(
+      p.fechaFin?.substring(0, 10)
+    );
+
+    setEstado(p.estado);
+  };
+
+  // =========================
+  // ACTUALIZAR
+  // =========================
+  const actualizarProyecto =
+    async (e) => {
+
+      e.preventDefault();
+
+      try {
+
+        await api.put(
+          `/proyectos/${idEditar}`,
+          {
+            nombre,
+            descripcion,
+            fechaInicio,
+            fechaFin,
+            estado,
+          }
+        );
+
+        alert(
+          "Proyecto actualizado"
+        );
+
+        setEditando(false);
+
+        setIdEditar(null);
+
+        limpiarFormulario();
+
+        cargarProyectos();
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert(
+          "Error actualizando proyecto"
+        );
+      }
+    };
+
+  // =========================
+  // LIMPIAR FORMULARIO
+  // =========================
+  const limpiarFormulario = () => {
+
+    setNombre("");
+
+    setDescripcion("");
+
+    setFechaInicio("");
+
+    setFechaFin("");
+
+    setEstado("");
+  };
+
+  // =========================
+  // CARGAR AL INICIAR
+  // =========================
+  useEffect(() => {
+
+    cargarProyectos();
+
+  }, []);
 
   return (
-    <MainLayout>
+    <div className="p-6">
 
-      <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "20px"
-      }}>
+      <h1 className="text-2xl font-bold mb-6">
+        Proyectos
+      </h1>
 
-        <h1>Proyectos</h1>
+      {/* FORMULARIO */}
+      <form
+        onSubmit={
+          editando
+            ? actualizarProyecto
+            : crearProyecto
+        }
+        className="bg-white p-6 rounded shadow mb-6"
+      >
 
-        <button style={newButton}>
-          + Nuevo Proyecto
+        <div className="grid grid-cols-2 gap-4">
+
+          <input
+            type="text"
+            placeholder="Nombre"
+            value={nombre}
+            onChange={(e) =>
+              setNombre(e.target.value)
+            }
+            className="border p-2 rounded"
+            required
+          />
+
+          <input
+            type="text"
+            placeholder="Estado"
+            value={estado}
+            onChange={(e) =>
+              setEstado(e.target.value)
+            }
+            className="border p-2 rounded"
+            required
+          />
+
+          <textarea
+            placeholder="Descripción"
+            value={descripcion}
+            onChange={(e) =>
+              setDescripcion(e.target.value)
+            }
+            className="border p-2 rounded col-span-2"
+            required
+          />
+
+          <input
+            type="date"
+            value={fechaInicio}
+            onChange={(e) =>
+              setFechaInicio(e.target.value)
+            }
+            className="border p-2 rounded"
+            required
+          />
+
+          <input
+            type="date"
+            value={fechaFin}
+            onChange={(e) =>
+              setFechaFin(e.target.value)
+            }
+            className="border p-2 rounded"
+            required
+          />
+
+        </div>
+
+        <button
+          type="submit"
+          className={`mt-4 text-white px-4 py-2 rounded ${
+            editando
+              ? "bg-yellow-500"
+              : "bg-blue-600"
+          }`}
+        >
+
+          {editando
+            ? "Actualizar Proyecto"
+            : "Crear Proyecto"}
+
         </button>
+
+      </form>
+
+      {/* TABLA */}
+      <div className="bg-white shadow rounded p-4">
+
+        <table className="w-full border">
+
+          <thead>
+
+            <tr className="bg-gray-200">
+
+              <th className="p-2 border">
+                Nombre
+              </th>
+
+              <th className="p-2 border">
+                Estado
+              </th>
+
+              <th className="p-2 border">
+                Fecha Inicio
+              </th>
+
+              <th className="p-2 border">
+                Fecha Fin
+              </th>
+
+              <th className="p-2 border">
+                Acciones
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {proyectos.map((p) => (
+
+              <tr key={p.id}>
+
+                <td className="p-2 border">
+                  {p.nombre}
+                </td>
+
+                <td className="p-2 border">
+                  {p.estado}
+                </td>
+
+                <td className="p-2 border">
+                  {p.fechaInicio?.substring(0, 10)}
+                </td>
+
+                <td className="p-2 border">
+                  {p.fechaFin?.substring(0, 10)}
+                </td>
+
+                <td className="p-2 border flex gap-2">
+
+                  <button
+                    onClick={() =>
+                      editarProyecto(p)
+                    }
+                    className="bg-yellow-500 text-white px-3 py-1 rounded"
+                  >
+                    Editar
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      eliminarProyecto(p.id)
+                    }
+                    className="bg-red-500 text-white px-3 py-1 rounded"
+                  >
+                    Eliminar
+                  </button>
+
+                </td>
+
+              </tr>
+            ))}
+
+          </tbody>
+
+        </table>
 
       </div>
 
-      {/* BUSCADOR */}
-      <input
-        type="text"
-        placeholder="Buscar proyecto..."
-        style={searchStyle}
-      />
-
-      {/* TABLA */}
-      <table style={tableStyle}>
-
-        <thead style={theadStyle}>
-          <tr>
-            <th style={thStyle}>ID</th>
-            <th style={thStyle}>Proyecto</th>
-            <th style={thStyle}>Estado</th>
-            <th style={thStyle}>Presupuesto</th>
-            <th style={thStyle}>Acciones</th>
-          </tr>
-        </thead>
-
-        <tbody>
-
-          {proyectos.map((proyecto) => (
-            <tr key={proyecto.id}>
-
-              <td style={tdStyle}>
-                {proyecto.id}
-              </td>
-
-              <td style={tdStyle}>
-                {proyecto.nombre}
-              </td>
-
-              <td style={tdStyle}>
-                {proyecto.estado}
-              </td>
-
-              <td style={tdStyle}>
-                {proyecto.presupuesto}
-              </td>
-
-              <td style={tdStyle}>
-
-                <button style={editButton}>
-                  Editar
-                </button>
-
-                <button style={deleteButton}>
-                  Eliminar
-                </button>
-
-              </td>
-
-            </tr>
-          ))}
-
-        </tbody>
-
-      </table>
-
-    </MainLayout>
+    </div>
   );
 }
-
-const newButton = {
-  backgroundColor: "#2563eb",
-  color: "white",
-  border: "none",
-  padding: "10px 15px",
-  borderRadius: "5px",
-  cursor: "pointer"
-};
-
-const searchStyle = {
-  width: "300px",
-  padding: "10px",
-  marginBottom: "20px",
-  borderRadius: "5px",
-  border: "1px solid #ccc"
-};
-
-const tableStyle = {
-  width: "100%",
-  backgroundColor: "white",
-  borderCollapse: "collapse",
-  borderRadius: "10px",
-  overflow: "hidden"
-};
-
-const theadStyle = {
-  backgroundColor: "#1e293b",
-  color: "white"
-};
-
-const thStyle = {
-  padding: "15px",
-  textAlign: "left"
-};
-
-const tdStyle = {
-  padding: "15px",
-  borderBottom: "1px solid #ddd"
-};
-
-const editButton = {
-  backgroundColor: "#16a34a",
-  color: "white",
-  border: "none",
-  padding: "8px 12px",
-  borderRadius: "5px",
-  marginRight: "10px",
-  cursor: "pointer"
-};
-
-const deleteButton = {
-  backgroundColor: "#dc2626",
-  color: "white",
-  border: "none",
-  padding: "8px 12px",
-  borderRadius: "5px",
-  cursor: "pointer"
-};
 
 export default Proyectos;
