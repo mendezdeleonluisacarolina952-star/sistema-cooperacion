@@ -1,13 +1,21 @@
 function Dashboard() {
   return (
-    <div style={{ padding: "30px" }}>
+    <div style={{
+      padding: "30px",
+      backgroundColor: "#f3f4f6",
+      minHeight: "100vh"
+    }}>
 
-      <h1>Dashboard</h1>
+      <h1 style={{
+        marginBottom: "30px"
+      }}>
+        Dashboard
+      </h1>
 
       <div style={{
         display: "flex",
         gap: "20px",
-        marginTop: "20px"
+        flexWrap: "wrap"
       }}>
 
         <div style={{
@@ -15,10 +23,10 @@ function Dashboard() {
           color: "white",
           padding: "20px",
           borderRadius: "10px",
-          width: "200px"
+          width: "220px"
         }}>
           <h2>Beneficiarios</h2>
-          <p>120</p>
+          <p style={{ fontSize: "30px" }}>120</p>
         </div>
 
         <div style={{
@@ -26,10 +34,21 @@ function Dashboard() {
           color: "white",
           padding: "20px",
           borderRadius: "10px",
-          width: "200px"
+          width: "220px"
         }}>
           <h2>Proyectos</h2>
-          <p>15</p>
+          <p style={{ fontSize: "30px" }}>15</p>
+        </div>
+
+        <div style={{
+          backgroundColor: "#dc2626",
+          color: "white",
+          padding: "20px",
+          borderRadius: "10px",
+          width: "220px"
+        }}>
+          <h2>Usuarios</h2>
+          <p style={{ fontSize: "30px" }}>8</p>
         </div>
 
       </div>
