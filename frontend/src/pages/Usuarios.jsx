@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 
 import api from "../api/axios";
 
+import { useNavigate } from "react-router-dom";
+
 function Usuarios() {
+
+  const navigate = useNavigate();
 
   // =========================
   // STATES
@@ -22,7 +26,9 @@ function Usuarios() {
   const [rol, setRol] =
     useState("");
 
+  // =========================
   // EDITAR
+  // =========================
   const [editando, setEditando] =
     useState(false);
 
@@ -47,7 +53,9 @@ function Usuarios() {
         "Error cargando usuarios:",
         error
       );
+
     }
+
   };
 
   // =========================
@@ -59,12 +67,15 @@ function Usuarios() {
 
     try {
 
-      await api.post("/usuarios", {
-        nombre,
-        email,
-        password,
-        rol,
-      });
+      await api.post(
+        "/usuarios",
+        {
+          nombre,
+          email,
+          password,
+          rol,
+        }
+      );
 
       alert("Usuario creado");
 
@@ -74,16 +85,21 @@ function Usuarios() {
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        error.response?.data
+      );
 
       alert(
+        error.response?.data?.error ||
         "Error creando usuario"
       );
+
     }
+
   };
 
   // =========================
-  // ELIMINAR
+  // ELIMINAR USUARIO
   // =========================
   const eliminarUsuario =
     async (id) => {
@@ -94,18 +110,25 @@ function Usuarios() {
           `/usuarios/${id}`
         );
 
-        alert("Usuario eliminado");
+        alert(
+          "Usuario eliminado"
+        );
 
         cargarUsuarios();
 
       } catch (error) {
 
-        console.error(error);
+        console.error(
+          error.response?.data
+        );
 
         alert(
+          error.response?.data?.error ||
           "Error eliminando usuario"
         );
+
       }
+
     };
 
   // =========================
@@ -115,15 +138,24 @@ function Usuarios() {
 
     setEditando(true);
 
-    setIdEditar(u.id_usuario);
+    setIdEditar(
+      u.id_usuario
+    );
 
-    setNombre(u.nombre);
+    setNombre(
+      u.nombre || ""
+    );
 
-    setEmail(u.email);
+    setEmail(
+      u.email || ""
+    );
 
-    setRol(u.rol);
+    setRol(
+      u.rol || ""
+    );
 
     setPassword("");
+
   };
 
   // =========================
@@ -137,13 +169,16 @@ function Usuarios() {
       try {
 
         await api.put(
+
           `/usuarios/${idEditar}`,
+
           {
             nombre,
             email,
             password,
             rol,
           }
+
         );
 
         alert(
@@ -160,12 +195,17 @@ function Usuarios() {
 
       } catch (error) {
 
-        console.error(error);
+        console.error(
+          error.response?.data
+        );
 
         alert(
+          error.response?.data?.error ||
           "Error actualizando usuario"
         );
+
       }
+
     };
 
   // =========================
@@ -180,6 +220,7 @@ function Usuarios() {
     setPassword("");
 
     setRol("");
+
   };
 
   // =========================
@@ -192,11 +233,26 @@ function Usuarios() {
   }, []);
 
   return (
+
     <div className="p-6">
 
-      <h1 className="text-3xl font-bold mb-6">
-        Usuarios
-      </h1>
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-6">
+
+        <h1 className="text-3xl font-bold">
+          Usuarios
+        </h1>
+
+        <button
+          onClick={() =>
+            navigate("/dashboard")
+          }
+          className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded"
+        >
+          Regresar
+        </button>
+
+      </div>
 
       {/* FORMULARIO */}
       <form
@@ -215,7 +271,9 @@ function Usuarios() {
             placeholder="Nombre"
             value={nombre}
             onChange={(e) =>
-              setNombre(e.target.value)
+              setNombre(
+                e.target.value
+              )
             }
             className="border p-2 rounded"
             required
@@ -226,7 +284,9 @@ function Usuarios() {
             placeholder="Correo"
             value={email}
             onChange={(e) =>
-              setEmail(e.target.value)
+              setEmail(
+                e.target.value
+              )
             }
             className="border p-2 rounded"
             required
@@ -237,7 +297,9 @@ function Usuarios() {
             placeholder="Contraseña"
             value={password}
             onChange={(e) =>
-              setPassword(e.target.value)
+              setPassword(
+                e.target.value
+              )
             }
             className="border p-2 rounded"
             required={!editando}
@@ -246,7 +308,9 @@ function Usuarios() {
           <select
             value={rol}
             onChange={(e) =>
-              setRol(e.target.value)
+              setRol(
+                e.target.value
+              )
             }
             className="border p-2 rounded"
             required
@@ -277,9 +341,11 @@ function Usuarios() {
           }`}
         >
 
-          {editando
-            ? "Actualizar Usuario"
-            : "Crear Usuario"}
+          {
+            editando
+              ? "Actualizar Usuario"
+              : "Crear Usuario"
+          }
 
         </button>
 
@@ -357,6 +423,7 @@ function Usuarios() {
                 </td>
 
               </tr>
+
             ))}
 
           </tbody>
@@ -366,7 +433,9 @@ function Usuarios() {
       </div>
 
     </div>
+
   );
+
 }
 
 export default Usuarios;

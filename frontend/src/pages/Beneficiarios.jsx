@@ -1,18 +1,28 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import api from "../api/axios";
 
-function Beneficiarios() {
+function Proyectos() {
+
+  const navigate = useNavigate();
 
   // =========================
   // STATES
   // =========================
-  const [beneficiarios, setBeneficiarios] =
+  const [proyectos, setProyectos] =
     useState([]);
 
-  const [nombre, setNombre] = useState("");
-  const [dpi, setDpi] = useState("");
-  const [edad, setEdad] = useState("");
-  const [ubicacion, setUbicacion] =
+  const [nombre, setNombre] =
+    useState("");
+
+  const [estado, setEstado] =
+    useState("");
+
+  const [fechaInicio, setFechaInicio] =
+    useState("");
+
+  const [fechaFin, setFechaFin] =
     useState("");
 
   // EDITAR
@@ -23,108 +33,113 @@ function Beneficiarios() {
     useState(null);
 
   // =========================
-  // OBTENER BENEFICIARIOS
+  // OBTENER PROYECTOS
   // =========================
-  const cargarBeneficiarios = async () => {
+  const cargarProyectos = async () => {
 
     try {
 
-      const response = await api.get(
-        "/beneficiarios"
-      );
+      const response =
+        await api.get("/proyectos");
 
-      setBeneficiarios(response.data);
+      setProyectos(response.data);
 
     } catch (error) {
 
       console.error(
-        "Error cargando beneficiarios:",
+        "Error cargando proyectos:",
         error
       );
     }
   };
 
   // =========================
-  // CREAR BENEFICIARIO
+  // CREAR PROYECTO
   // =========================
-  const crearBeneficiario = async (e) => {
+  const crearProyecto = async (e) => {
 
     e.preventDefault();
 
     try {
 
-      await api.post("/beneficiarios", {
+      await api.post("/proyectos", {
         nombre,
-        dpi,
-        edad: Number(edad),
-        ubicacion,
+        estado,
+        fecha_inicio: fechaInicio,
+        fecha_fin: fechaFin,
       });
 
-      alert("Beneficiario creado");
+      alert("Proyecto creado");
 
       limpiarFormulario();
 
-      cargarBeneficiarios();
+      cargarProyectos();
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        error.response?.data || error
+      );
 
       alert(
-        "Error creando beneficiario"
+        "Error creando proyecto"
       );
     }
   };
 
   // =========================
-  // ELIMINAR BENEFICIARIO
+  // ELIMINAR PROYECTO
   // =========================
-  const eliminarBeneficiario = async (
+  const eliminarProyecto = async (
     id
   ) => {
 
     try {
 
       await api.delete(
-        `/beneficiarios/${id}`
+        `/proyectos/${id}`
       );
 
-      alert("Beneficiario eliminado");
+      alert("Proyecto eliminado");
 
-      cargarBeneficiarios();
+      cargarProyectos();
 
     } catch (error) {
 
       console.error(error);
 
       alert(
-        "Error eliminando beneficiario"
+        "Error eliminando proyecto"
       );
     }
   };
 
   // =========================
-  // EDITAR BENEFICIARIO
+  // EDITAR PROYECTO
   // =========================
-  const editarBeneficiario = (b) => {
+  const editarProyecto = (p) => {
 
     setEditando(true);
 
-    setIdEditar(b.id);
+    setIdEditar(p.id_proyecto);
 
-    setNombre(b.nombre);
+    setNombre(p.nombre);
 
-    setDpi(b.dpi);
+    setEstado(p.estado);
 
-    setEdad(b.edad);
+    setFechaInicio(
+      p.fecha_inicio?.split("T")[0]
+    );
 
-    setUbicacion(b.ubicacion);
+    setFechaFin(
+      p.fecha_fin?.split("T")[0]
+    );
   };
 
   // =========================
-  // ACTUALIZAR BENEFICIARIO
+  // ACTUALIZAR PROYECTO
   // =========================
-  const actualizarBeneficiario =
+  const actualizarProyecto =
     async (e) => {
 
       e.preventDefault();
@@ -132,17 +147,17 @@ function Beneficiarios() {
       try {
 
         await api.put(
-          `/beneficiarios/${idEditar}`,
+          `/proyectos/${idEditar}`,
           {
             nombre,
-            dpi,
-            edad: Number(edad),
-            ubicacion,
+            estado,
+            fecha_inicio: fechaInicio,
+            fecha_fin: fechaFin,
           }
         );
 
         alert(
-          "Beneficiario actualizado"
+          "Proyecto actualizado"
         );
 
         setEditando(false);
@@ -151,14 +166,16 @@ function Beneficiarios() {
 
         limpiarFormulario();
 
-        cargarBeneficiarios();
+        cargarProyectos();
 
       } catch (error) {
 
-        console.error(error);
+        console.error(
+          error.response?.data || error
+        );
 
         alert(
-          "Error actualizando beneficiario"
+          "Error actualizando proyecto"
         );
       }
     };
@@ -170,35 +187,50 @@ function Beneficiarios() {
 
     setNombre("");
 
-    setDpi("");
+    setEstado("");
 
-    setEdad("");
+    setFechaInicio("");
 
-    setUbicacion("");
+    setFechaFin("");
   };
 
   // =========================
-  // CARGAR AL INICIAR
+  // USE EFFECT
   // =========================
   useEffect(() => {
 
-    cargarBeneficiarios();
+    cargarProyectos();
 
   }, []);
 
   return (
+
     <div className="p-6">
 
-      <h1 className="text-2xl font-bold mb-6">
-        Beneficiarios
-      </h1>
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-6">
+
+        <h1 className="text-3xl font-bold">
+          Proyectos
+        </h1>
+
+        <button
+          onClick={() =>
+            navigate("/dashboard")
+          }
+          className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded"
+        >
+          Regresar
+        </button>
+
+      </div>
 
       {/* FORMULARIO */}
       <form
         onSubmit={
           editando
-            ? actualizarBeneficiario
-            : crearBeneficiario
+            ? actualizarProyecto
+            : crearProyecto
         }
         className="bg-white p-6 rounded shadow mb-6"
       >
@@ -207,10 +239,12 @@ function Beneficiarios() {
 
           <input
             type="text"
-            placeholder="Nombre"
+            placeholder="Nombre Proyecto"
             value={nombre}
             onChange={(e) =>
-              setNombre(e.target.value)
+              setNombre(
+                e.target.value
+              )
             }
             className="border p-2 rounded"
             required
@@ -218,32 +252,36 @@ function Beneficiarios() {
 
           <input
             type="text"
-            placeholder="DPI"
-            value={dpi}
+            placeholder="Estado"
+            value={estado}
             onChange={(e) =>
-              setDpi(e.target.value)
+              setEstado(
+                e.target.value
+              )
             }
             className="border p-2 rounded"
             required
           />
 
           <input
-            type="number"
-            placeholder="Edad"
-            value={edad}
+            type="date"
+            value={fechaInicio}
             onChange={(e) =>
-              setEdad(e.target.value)
+              setFechaInicio(
+                e.target.value
+              )
             }
             className="border p-2 rounded"
             required
           />
 
           <input
-            type="text"
-            placeholder="Ubicación"
-            value={ubicacion}
+            type="date"
+            value={fechaFin}
             onChange={(e) =>
-              setUbicacion(e.target.value)
+              setFechaFin(
+                e.target.value
+              )
             }
             className="border p-2 rounded"
             required
@@ -261,8 +299,8 @@ function Beneficiarios() {
         >
 
           {editando
-            ? "Actualizar Beneficiario"
-            : "Crear Beneficiario"}
+            ? "Actualizar Proyecto"
+            : "Crear Proyecto"}
 
         </button>
 
@@ -282,15 +320,15 @@ function Beneficiarios() {
               </th>
 
               <th className="p-2 border">
-                DPI
+                Estado
               </th>
 
               <th className="p-2 border">
-                Edad
+                Fecha Inicio
               </th>
 
               <th className="p-2 border">
-                Ubicación
+                Fecha Fin
               </th>
 
               <th className="p-2 border">
@@ -303,31 +341,35 @@ function Beneficiarios() {
 
           <tbody>
 
-            {beneficiarios.map((b) => (
+            {proyectos.map((p) => (
 
-              <tr key={b.id}>
+              <tr key={p.id_proyecto}>
 
                 <td className="p-2 border">
-                  {b.nombre}
+                  {p.nombre}
                 </td>
 
                 <td className="p-2 border">
-                  {b.dpi}
+                  {p.estado}
                 </td>
 
                 <td className="p-2 border">
-                  {b.edad}
+                  {
+                    p.fecha_inicio?.split("T")[0]
+                  }
                 </td>
 
                 <td className="p-2 border">
-                  {b.ubicacion}
+                  {
+                    p.fecha_fin?.split("T")[0]
+                  }
                 </td>
 
                 <td className="p-2 border flex gap-2">
 
                   <button
                     onClick={() =>
-                      editarBeneficiario(b)
+                      editarProyecto(p)
                     }
                     className="bg-yellow-500 text-white px-3 py-1 rounded"
                   >
@@ -336,8 +378,8 @@ function Beneficiarios() {
 
                   <button
                     onClick={() =>
-                      eliminarBeneficiario(
-                        b.id
+                      eliminarProyecto(
+                        p.id_proyecto
                       )
                     }
                     className="bg-red-500 text-white px-3 py-1 rounded"
@@ -348,6 +390,7 @@ function Beneficiarios() {
                 </td>
 
               </tr>
+
             ))}
 
           </tbody>
@@ -357,7 +400,8 @@ function Beneficiarios() {
       </div>
 
     </div>
+
   );
 }
 
-export default Beneficiarios;
+export default Proyectos;
