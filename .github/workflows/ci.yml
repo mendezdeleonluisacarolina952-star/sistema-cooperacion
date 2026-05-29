@@ -1,0 +1,41 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependencias Backend
+        run: |
+          cd backend
+          npm install
+
+      - name: Instalar dependencias Frontend
+        run: |
+          cd frontend
+          npm install
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm run build
